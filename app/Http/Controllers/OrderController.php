@@ -43,11 +43,12 @@ class OrderController extends Controller
      * @OA\Get(
      *     path="/api/orders",
      *     summary="Obtener todas las ordenes",
+     *     tags={"Productos"},
      *     tags={"Ordenes"},
      *     description="Retorna la lista de ordenes",
      *     @OA\Response(
      *         response=200,
-     *         description="List of orders",
+     *         description="Lista de ordened",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Order"))
      *     ),
      *     @OA\Response(
@@ -71,6 +72,7 @@ class OrderController extends Controller
      * @OA\Post(
      *     path="/api/orders",
      *     summary="Crear nueva orden",
+     *     tags={"Ordenes"},
      *     description="Crear una nueva orden con el ID del usuario y los productos (ID, quantity)",
      *     @OA\RequestBody(
      *         required=true,
@@ -140,6 +142,7 @@ class OrderController extends Controller
      * @OA\Get(
      *     path="/api/orders/{id}",
      *     summary="Obtener un order",
+     *     tags={"Ordenes"},
      *     description="Retorna la ifnromación de una orde especfica por ID",
      *     @OA\Parameter(
      *         name="id",
@@ -181,6 +184,7 @@ class OrderController extends Controller
      * @OA\Delete(
      *     path="/api/orders/{id}",
      *     summary="ELiminar order",
+     *     tags={"Ordenes"},
      *     description="Elimina una orden permanentemente por su ID",
      *     @OA\Parameter(
      *         name="id",
@@ -222,12 +226,12 @@ class OrderController extends Controller
     }
 
     /**
-     * @OA\Put(
-     *     path="/orders/{orderId}/status",
+     * @OA\Patch(
+     *     path="/orders/{id}/status",
      *     summary="Actualizar el estado de las ordenes",
+     *     tags={"Ordenes"},
      *     description="Actualiza el estado de la orden (entregado, cancelado)",
      *     operationId="updateOrderStatus",
-     *     tags={"Orders"},
      *     @OA\Parameter(
      *         name="orderId",
      *         in="path",

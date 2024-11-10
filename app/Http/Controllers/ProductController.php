@@ -33,12 +33,12 @@ class ProductController extends Controller
      *     description="Retorna una lista de todos los productos",
      *     @OA\Response(
      *         response=200,
-     *         description="List of products",
+     *         description="Lista de productos",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Product"))
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Server error"
+     *         description="Error al obtener productos"
      *     )
      * )
      */
@@ -56,8 +56,9 @@ class ProductController extends Controller
     /**
      * @OA\Post(
      *     path="/api/products",
-     *     summary="Create a new product",
-     *     description="Creates a new product and returns the created product",
+     *     summary="Crear un nuevo producto",
+     *     tags={"Productos"},
+     *     description="Crear un nuevo producto y retorna un estado 201",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -69,16 +70,16 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Product created successfully",
+     *         description="Producto registrado correctamente",
      *         @OA\JsonContent(ref="#/components/schemas/Product")
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Bad Request"
+     *         description="Error en la solicitud"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Server error"
+     *         description="Error al crear el producto"
      *     )
      * )
      */
@@ -90,8 +91,8 @@ class ProductController extends Controller
 
             return response()->json(['status' => true, 'message' => 'Producto registrado correctamente.'], 201);
         } catch (QueryException $e) {
-            Log::error("Error al crear producto: " . $e->getMessage());
-            return response()->json(['error' => 'Error al crear producto'], 500);
+            Log::error("Error al crear el producto: " . $e->getMessage());
+            return response()->json(['error' => 'Error al crear el producto'], 500);
         } catch (\Exception $e) {
             Log::error("Error en la solicitud: " . $e->getMessage());
             return response()->json(['error' => 'Error en la solicitud'], 400);
@@ -101,8 +102,9 @@ class ProductController extends Controller
     /**
      * @OA\Get(
      *     path="/api/products/{id}",
-     *     summary="Get a product by ID",
-     *     description="Returns a single product by ID",
+     *     summary="Obtener producto por ID",
+     *     tags={"Productos"},
+     *     description="Retorne el objeto del prodcuto obtenido por ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -111,16 +113,16 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Product data",
+     *         description="Data del producto obetnido",
      *         @OA\JsonContent(ref="#/components/schemas/Product")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Product not found"
+     *         description="Productono encontrado"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Server error"
+     *         description="Erro al obtener el producto"
      *     )
      * )
      */
@@ -141,8 +143,9 @@ class ProductController extends Controller
     /**
      * @OA\Put(
      *     path="/api/products/{id}",
-     *     summary="Update a product by ID",
-     *     description="Updates an existing product and returns the updated product",
+     *     summary="Actualizar producto por ID",
+     *     tags={"Productos"},
+     *     description="Actualizar un producto por refereciado por su ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -160,16 +163,16 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Product updated",
+     *         description="Producto actualizado correctamente.",
      *         @OA\JsonContent(ref="#/components/schemas/Product")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Product not found"
+     *         description="Producto no encotrado"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Server error"
+     *         description="Error al actualizar producto"
      *     )
      * )
      */
@@ -193,8 +196,9 @@ class ProductController extends Controller
     /**
      * @OA\Delete(
      *     path="/api/products/{id}",
-     *     summary="Delete a product by ID",
-     *     description="Deletes an existing product by ID",
+     *     summary="Eliminar producto por ID",
+     *     tags={"Productos"},
+     *     description="Elimina un producto referenciado por su ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -203,7 +207,7 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Product deleted",
+     *         description="Producto eliminado con éxtio",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="message", type="string", example="Producto eliminado con éxito")
@@ -211,11 +215,11 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Product not found"
+     *         description="Producto no encontrado"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Server error"
+     *         description="Error al eliminar el prodcuto"
      *     )
      * )
      */
