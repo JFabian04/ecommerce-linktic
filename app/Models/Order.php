@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Order extends Model
 {
 
-
+    protected $fillable = [
+        'user_id',
+        'total',
+        'status'
+    ];
 
     /**
      * Una Orden le pertene a un usuario
