@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -18,7 +19,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-    
+
         // Verificar las credenciales
         $user = User::where('email', $request->email)->first();
 
@@ -42,12 +43,17 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->tokens->each(function ($token) {
-            $token->delete();
-        });
-
-        return response()->json([
-            'message' => 'Sesión cerrada correctamente.',
-        ]);
+        // Verificar si el usuario está autenticado
+        $user = Auth::guard('sanctum')->user();
+    
+        // Si no está autenticado, devolver un error
+        if (!$user) {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+    
+        // Revocar el token actual
+        $request->user()->currentAccessToken()->delete();
+    
+        return response()->json(['message' => 'Cierre de sesión exitoso.'], 200);
     }
 }

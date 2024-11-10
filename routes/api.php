@@ -9,10 +9,6 @@ use App\Http\Middleware\AuthenticateApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
 
 // Usuarios
 Route::resource('users', UserController::class);
@@ -24,11 +20,16 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::resource('products', ProductController::class);
 
 Route::middleware(AuthenticateApi::class)->group(function () {
+    // Rutas para imagenes de productos
     Route::prefix('products/images')->group(function () {
         Route::post('/', [ProductImageController::class, 'store']);
         Route::delete('{id}', [ProductImageController::class, 'destroy']);
     });
 
+    // Rutas para ordenes
     Route::resource('orders', OrderController::class);
     Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.cancel');
+
+    // Cerrar seisón
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 });
