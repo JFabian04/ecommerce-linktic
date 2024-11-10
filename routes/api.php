@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -10,9 +11,14 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-// Route::prefix('products')->group(function (){
+// Crud de Productos
 Route::resource('products', ProductController::class);
-// });
+
+//Imagenes d productos
+Route::prefix('products/images')->group(function () {
+    Route::post('/', [ProductImageController::class, 'store']);
+    Route::delete('{id}', [ProductImageController::class, 'destroy']);
+});
 
 // Crud de ordenes
 Route::resource('orders', OrderController::class);

@@ -491,6 +491,108 @@
                     }
                 }
             }
+        },
+        "/api/products/images": {
+            "post": {
+                "tags": [
+                    "Product Images"
+                ],
+                "summary": "Cargar imagen para un producto",
+                "description": "Cargar una nueva imagen para un producto.",
+                "operationId": "uploadProductImage",
+                "requestBody": {
+                    "description": "Imagen para cargar",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image",
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "description": "Imagen del producto",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "product_id": {
+                                        "description": "ID del producto",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Imagen cargada con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Imagen cargada con éxito."
+                                        },
+                                        "image": {
+                                            "$ref": "#/components/schemas/ProductImage"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Solicitud incorrecta"
+                    }
+                }
+            }
+        },
+        "/api/products/images/{id}": {
+            "delete": {
+                "tags": [
+                    "Product Images"
+                ],
+                "summary": "Eliminar imagen de un producto",
+                "description": "Eliminar una imagen de un producto.",
+                "operationId": "deleteProductImage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la imagen",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Imagen eliminada con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Imagen eliminada con éxito."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Imagen no encontrada"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -559,6 +661,31 @@
                     }
                 },
                 "type": "object"
+            },
+            "ProductImage": {
+                "required": [
+                    "id",
+                    "product_id",
+                    "image_url"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID de la imagen del producto",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "description": "ID del producto al que pertenece la imagen",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "image_url": {
+                        "description": "URL de la imagen del producto",
+                        "type": "string",
+                        "example": "https://example.com/images/product1.jpg"
+                    }
+                },
+                "type": "object"
             }
         }
     },
@@ -570,6 +697,10 @@
         {
             "name": "Ordenes",
             "description": "Endpoints - órdenes"
+        },
+        {
+            "name": "Product Images",
+            "description": "Product Images"
         }
     ]
 }

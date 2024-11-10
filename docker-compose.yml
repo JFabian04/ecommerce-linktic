@@ -9,6 +9,7 @@ services:
             - '8000:8000'
         volumes:
             - '.:/var/www'
+            - ./public/storage:/var/www/public/storage
         networks:
             - laravel-net
         depends_on:
@@ -23,6 +24,8 @@ services:
             MYSQL_PASSWORD: linktic
         ports:
             - '3306:3306'
+        volumes:
+           - sail-mysql:/var/lib/mysql
         networks:
             - laravel-net
     phpmyadmin:

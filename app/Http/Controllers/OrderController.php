@@ -102,6 +102,7 @@ class OrderController extends Controller
     public function store(OrderRequest $request)
     {
         try {
+            // Transacción para evitar incosistencias entre la tabla ordenes y la tabla dinamica
             DB::beginTransaction();
 
             $data = $request->all();
@@ -109,18 +110,30 @@ class OrderController extends Controller
             // Se utiliza el servicio para manejar la lógica de cálculo.
             $total = $this->orderService->calculateTotalOrder($request->products);
 
-            if ($total['status']) {
-                $data['total'] = $total['result'];
-            } else {
+            if (!$total['status']) {
                 return response()->json($total['error'], 500);
             }
 
+            $data['total'] = $total['result'];
+
             // Crear la orden
             $order = Order::create($data);
-            $products = [];
+            // Usar el servicio para actualizar el stock de los productos
+            $stockUpdate = $this->orderService->updateProductStock($request->products);
+            
 
+            if (!$stockUpdate['status']) {
+                return response()->json(['error' => $stockUpdate['error']], $stockUpdate['code']);
+            }
+
+            // Crear array con la data para la tabla intermedia
+            $products = [];
             foreach ($request->products as $productData) {
-                $product = Product::findOrfail($productData['id']);
+                $product = Product::find($productData['id']);
+
+                if (!$product) {
+                    return response()->json(['error' => 'Producto no encontrado'], 404);
+                }
 
                 $products[$productData['id']] = ['quantity' => $productData['quantity'], 'price' => $product->price];
             }
@@ -132,7 +145,7 @@ class OrderController extends Controller
 
             return response()->json(['status' => true, 'message' => 'Tu orden ha sido realizada.'], 201);
         } catch (QueryException $e) {
-            DB::rollBack();  // Revertir la transacción en caso de error
+            DB::rollBack();
             Log::error("Error creando la orden: " . $e->getMessage());
             return response()->json(['error' => 'Error creando la orden.'], 500);
         }
@@ -297,7 +310,7 @@ class OrderController extends Controller
         } catch (QueryException $e) {
             Log::error("Error cambiando el estado de la orden: " . $e->getMessage());
             return response()->json(['error' => 'Error cambiando el estado de la orden.'], 500);
-        }catch (ValidationException $e){
+        } catch (ValidationException $e) {
             return response()->json(['errors' => ['status' => ['Estado no valido.']]], 200);
         }
     }

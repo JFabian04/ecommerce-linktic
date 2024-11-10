@@ -11,7 +11,7 @@ class Product extends Model
         'name',
         'description',
         'price',
-        'stock  ',
+        'stock',
     ];
 
     /**
@@ -25,4 +25,15 @@ class Product extends Model
             ->withPivot('quantity', 'price')
             ->withTimestamps();
     }
+
+    /**
+     * Producto puede tener muchas imagenes
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+    
 }
