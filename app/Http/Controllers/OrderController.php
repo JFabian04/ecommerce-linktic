@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\OrderRequest;
 use App\Models\Order;
+use App\Models\Product;
+use App\Services\OrderService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @OA\Schema(
@@ -27,12 +32,19 @@ use Illuminate\Support\Facades\Log;
  */
 class OrderController extends Controller
 {
+    protected $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
+
     /**
      * @OA\Get(
      *     path="/api/orders",
-     *     summary="Get all orders",
+     *     summary="Obtener todas las ordenes",
      *     tags={"Ordenes"},
-     *     description="Retrieve a list of all orders",
+     *     description="Retorna la lista de ordenes",
      *     @OA\Response(
      *         response=200,
      *         description="List of orders",
@@ -40,26 +52,26 @@ class OrderController extends Controller
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Error retrieving orders"
+     *         description="Error listando la información."
      *     )
      * )
      */
     public function index()
     {
         try {
-            $orders = Order::with(['user', 'products'])->get();
+            $orders = Order::with(['user:id,name,email', 'products:id,name,price'])->get();
             return response()->json($orders);
         } catch (QueryException $e) {
-            Log::error("Error retrieving orders: " . $e->getMessage());
-            return response()->json(['error' => 'Error retrieving orders'], 500);
+            Log::error("Error listando la información.: " . $e->getMessage());
+            return response()->json(['error' => 'Error listando la información.'], 500);
         }
     }
 
     /**
      * @OA\Post(
      *     path="/api/orders",
-     *     summary="Create a new order",
-     *     description="Create a new order associated with a user and products",
+     *     summary="Crear nueva orden",
+     *     description="Crear una nueva orden con el ID del usuario y los productos (ID, quantity)",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -72,50 +84,63 @@ class OrderController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Order created successfully",
+     *         description="Tu orden ha sido realizada",
      *         @OA\JsonContent(ref="#/components/schemas/Order")
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Invalid request"
+     *         description="Petición invalida"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Error creating order"
+     *         description="Error registrando la orden"
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(OrderRequest $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-        ]);
-
         try {
-            $order = Order::create(['user_id' => $request->user_id]);
+            DB::beginTransaction();
+
+            $data = $request->all();
+
+            // Se utiliza el servicio para manejar la lógica de cálculo.
+            $total = $this->orderService->calculateTotalOrder($request->products);
+
+            if ($total['status']) {
+                $data['total'] = $total['result'];
+            } else {
+                return response()->json($total['error'], 500);
+            }
+
+            // Crear la orden
+            $order = Order::create($data);
             $products = [];
 
             foreach ($request->products as $productData) {
-                $products[$productData['product_id']] = ['quantity' => $productData['quantity']];
+                $product = Product::findOrfail($productData['id']);
+
+                $products[$productData['id']] = ['quantity' => $productData['quantity'], 'price' => $product->price];
             }
 
+            // Almacenar los datos en la tabla intermedia
             $order->products()->attach($products);
 
-            return response()->json($order->load('products'), 201);
+            DB::commit();
+
+            return response()->json(['status' => true, 'message' => 'Tu orden ha sido realizada.'], 201);
         } catch (QueryException $e) {
-            Log::error("Error creating order: " . $e->getMessage());
-            return response()->json(['error' => 'Error creating order'], 500);
+            DB::rollBack();  // Revertir la transacción en caso de error
+            Log::error("Error creando la orden: " . $e->getMessage());
+            return response()->json(['error' => 'Error creando la orden.'], 500);
         }
     }
 
     /**
      * @OA\Get(
      *     path="/api/orders/{id}",
-     *     summary="Get an order",
-     *     description="Retrieve details of a specific order",
+     *     summary="Obtener un order",
+     *     description="Retorna la ifnromación de una orde especfica por ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -129,30 +154,34 @@ class OrderController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Order not found"
+     *         description="Orden no encontrada"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Error retrieving order"
+     *         description="Error obteniendo la orden"
      *     )
      * )
      */
     public function show($id)
     {
         try {
-            $order = Order::with(['user', 'products'])->findOrFail($id);
-            return response()->json($order);
+            $order = Order::with(['user:id,name,email', 'products:id,name,price'])->find($id);
+            if ($order) {
+                return response()->json($order);
+            } else {
+                return response()->json(['error' => 'No se encontró la orden.'], 404);
+            }
         } catch (QueryException $e) {
-            Log::error("Error retrieving order with ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Error retrieving order'], 500);
+            Log::error("Error obteniendo la orden ID $id: " . $e->getMessage());
+            return response()->json(['error' => 'Error obteniendo la orden'], 500);
         }
     }
 
     /**
      * @OA\Delete(
      *     path="/api/orders/{id}",
-     *     summary="Delete an order",
-     *     description="Delete a specific order by its ID",
+     *     summary="ELiminar order",
+     *     description="Elimina una orden permanentemente por su ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -166,25 +195,106 @@ class OrderController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Order not found"
+     *         description="Orden no encotrada"
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Error deleting order"
+     *         description="Error eliminado la order"
      *     )
      * )
      */
     public function destroy($id)
     {
         try {
-            $order = Order::findOrFail($id);
-            $order->products()->detach();
-            $order->delete();
+            $order = Order::find($id);
 
-            return response()->json(['message' => 'Order deleted successfully']);
+            if ($order) {
+                $order->products()->detach();
+                $order->delete();
+                return response()->json(['message' => 'La orden fue eliminada']);
+            } else {
+                return response()->json(['error' => 'No se encontró la orden.'], 404);
+            }
         } catch (QueryException $e) {
-            Log::error("Error deleting order with ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Error deleting order'], 500);
+            Log::error("Error eliminado la orden con ID $id: " . $e->getMessage());
+            return response()->json(['error' => 'Error eliminado la order'], 500);
+        }
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/orders/{orderId}/status",
+     *     summary="Actualizar el estado de las ordenes",
+     *     description="Actualiza el estado de la orden (entregado, cancelado)",
+     *     operationId="updateOrderStatus",
+     *     tags={"Orders"},
+     *     @OA\Parameter(
+     *         name="orderId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la orden a actualizar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Nuevo estado para la orden.",
+     *         @OA\JsonContent(
+     *             required={"status"},
+     *             @OA\Property(
+     *                 property="status",
+     *                 type="string",
+     *                 description="Estados para la orden  'entregado', 'cancelado'.",
+     *                 enum={"entregado", "cancelado"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estado de la orden actualizado.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Estado de la orden actualizado"),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Order")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="EL estado solicitado no es válido",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Estado no valido.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encotró la ordern",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Estado de la orden actualizado")
+     *         )
+     *     )
+     * )
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $data = $request->validate([
+                'status' => 'required|string|in:pendiente,entregado,cancelado'
+            ]);
+
+            $order = Order::find($id);
+
+            if ($order) {
+                // Actualizar el estado de la orden
+                $order->status = $data['status'];
+                $order->save();
+
+                return response()->json(['message' => 'Estado de la orden actualizado: ' . $data['status']], 200);
+            } else {
+                return response()->json(['error' => 'No se encontró la orden.'], 404);
+            }
+        } catch (QueryException $e) {
+            Log::error("Error cambiando el estado de la orden: " . $e->getMessage());
+            return response()->json(['error' => 'Error cambiando el estado de la orden.'], 500);
+        }catch (ValidationException $e){
+            return response()->json(['errors' => ['status' => ['Estado no valido.']]], 200);
         }
     }
 }
