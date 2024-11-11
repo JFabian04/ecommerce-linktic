@@ -14,12 +14,16 @@ Route::resource('users', UserController::class);
 // Autenticacion
 Route::post('/login', [AuthController::class, 'login']);
 
-// Crud de Productos
-Route::resource('products', ProductController::class);
-Route::patch('products/{id}/status', [ProductController::class, 'updateStatus']);
+// Rutas de productos publicas (Listar todos y listar por ID)
+Route::resource('products', ProductController::class)->only(['index', 'show']);
+
 
 Route::middleware('auth.api')->group(function () {
-    // Rutas para imagenes de productos
+    // Rutas productos privadas (Registrar, actulizar)
+    Route::resource('products', ProductController::class)->except(['index', 'show']);
+    Route::patch('products/{id}/status', [ProductController::class, 'updateStatus']);
+
+    // Imagenes de producto
     Route::prefix('products/images')->group(function () {
         Route::post('/', [ProductImageController::class, 'store']);
         Route::delete('{id}', [ProductImageController::class, 'destroy']);

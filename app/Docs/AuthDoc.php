@@ -66,7 +66,7 @@ class AuthDoc
      *     summary="Cerrar sesión",
      *     description="Cierra la sesión del usuario autenticado y revoca el token actual",
      *     tags={"Autenticación"},
-     * 
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Cierre de sesión exitoso",

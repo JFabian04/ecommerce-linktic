@@ -52,6 +52,7 @@ class ProductDoc
      *     path="/api/products",
      *     summary="Crear un nuevo producto",
      *     tags={"Productos"},
+     *     security={{"bearerAuth":{}}},
      *     description="Crear un nuevo producto y retorna un estado 201",
      *     @OA\RequestBody(
      *         required=true,
@@ -119,6 +120,7 @@ class ProductDoc
      *     path="/api/products/{id}",
      *     summary="Actualizar producto por ID",
      *     tags={"Productos"},
+     *     security={{"bearerAuth":{}}},
      *     description="Actualizar un producto por refereciado por su ID",
      *     @OA\Parameter(
      *         name="id",
@@ -159,6 +161,7 @@ class ProductDoc
      *     path="/api/products/{id}/status",
      *     summary="Actualizar estado de producto por ID",
      *     tags={"Productos"},
+     *     security={{"bearerAuth":{}}},
      *     description="Activa/Inactiva un producto referenciado por su ID",
      *     @OA\Parameter(
      *         name="id",

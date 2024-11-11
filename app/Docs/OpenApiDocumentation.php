@@ -10,6 +10,10 @@ use OpenApi\Annotations as OA;
  *     version="1.0.0",
  *     description="API para gestionar plataforma de e-commerce."
  * )
- * 
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer"
+ * )
  */
 class OpenApiDocumentation {}

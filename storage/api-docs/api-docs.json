@@ -156,7 +156,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/orders": {
@@ -184,7 +189,12 @@
                     "500": {
                         "description": "Error listando la información."
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -242,7 +252,12 @@
                     "500": {
                         "description": "Error registrando la orden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/orders/{id}": {
@@ -280,7 +295,12 @@
                     "500": {
                         "description": "Error obteniendo la orden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -322,7 +342,12 @@
                     "500": {
                         "description": "Error eliminado la order"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/orders/{id}/status": {
@@ -417,7 +442,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/report/orders": {
@@ -501,7 +531,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products": {
@@ -581,7 +616,12 @@
                     "500": {
                         "description": "Error al crear el producto"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products/{id}": {
@@ -681,7 +721,12 @@
                     "500": {
                         "description": "Error al actualizar producto"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products/{id}/status": {
@@ -725,7 +770,12 @@
                     "500": {
                         "description": "Error al cambiar el estado del prodcuto"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products/images": {
@@ -782,7 +832,12 @@
                     "400": {
                         "description": "Solicitud incorrecta"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products/images/{id}": {
@@ -824,7 +879,12 @@
                     "404": {
                         "description": "Imagen no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/users": {
@@ -1045,6 +1105,12 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     },

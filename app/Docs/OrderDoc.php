@@ -29,7 +29,7 @@ class OrderDoc
      * @OA\Get(
      *     path="/api/orders",
      *     summary="Obtener todas las ordenes",
-     *     tags={"Productos"},
+     *     security={{"bearerAuth":{}}},
      *     tags={"Ordenes"},
      *     description="Retorna la lista de ordenes",
      *     @OA\Response(
@@ -50,6 +50,7 @@ class OrderDoc
      *     path="/api/orders",
      *     summary="Crear nueva orden",
      *     tags={"Ordenes"},
+     *     security={{"bearerAuth":{}}},
      *     description="Crear una nueva orden con el ID del usuario y los productos (ID, quantity)",
      *     @OA\RequestBody(
      *         required=true,
@@ -84,6 +85,7 @@ class OrderDoc
      *     path="/api/orders/{id}",
      *     summary="Obtener un order",
      *     tags={"Ordenes"},
+     *     security={{"bearerAuth":{}}},
      *     description="Retorna la ifnromación de una orde especfica por ID",
      *     @OA\Parameter(
      *         name="id",
@@ -113,6 +115,7 @@ class OrderDoc
      *     path="/api/orders/{id}",
      *     summary="Eliminar order",
      *     tags={"Ordenes"},
+     *     security={{"bearerAuth":{}}},
      *     description="Elimina una orden permanentemente por su ID",
      *     @OA\Parameter(
      *         name="id",
@@ -143,6 +146,7 @@ class OrderDoc
      *     path="/orders/{id}/status",
      *     summary="Actualizar el estado de las ordenes",
      *     tags={"Ordenes"},
+     *     security={{"bearerAuth":{}}},
      *     description="Actualiza el estado de la orden (entregado, cancelado)",
      *     operationId="updateOrderStatus",
      *     @OA\Parameter(
@@ -197,7 +201,7 @@ class OrderDoc
      *     summary="Generar reporte de órdenes en Excel",
      *     description="Genera un archivo Excel con las órdenes en un rango de fechas especificado. Retorna la URL de descarga del archivo.",
      *     tags={"Ordenes"},
-     * 
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(

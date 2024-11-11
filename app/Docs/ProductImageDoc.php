@@ -40,6 +40,7 @@ class ProductImageDoc
      *     summary="Cargar imagen para un producto",
      *     operationId="uploadProductImage",
      *     tags={"Productos"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Imagen para cargar",
@@ -74,6 +75,7 @@ class ProductImageDoc
      *     summary="Eliminar imagen de un producto",
      *     operationId="deleteProductImage",
      *     tags={"Productos"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
