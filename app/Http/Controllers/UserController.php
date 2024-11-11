@@ -28,7 +28,7 @@ class UserController extends Controller
             ], 201);
         } catch (QueryException $e) {
             Log::error("Error creando el usuario.: " . $e->getMessage());
-            return response()->json(['error' => 'Error en el registro de usuario.'], 500);
+            return response()->json(['error' => 'Error en el registro de usuario. ' . $e->getMessage()], 500);
         }
     }
 }

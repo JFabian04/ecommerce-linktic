@@ -27,6 +27,7 @@ class OrderController extends Controller
         $this->orderService = $orderService;
     }
 
+    // Lista toda la información de las ordenes incluyendo data del usuario y del producto.
     public function index()
     {
         try {
@@ -38,7 +39,7 @@ class OrderController extends Controller
         }
     }
 
-
+    // Alamcena la orden en la tabla principal y en la tabla dinamica por medio de una transacción
     public function store(OrderRequest $request)
     {
         try {
@@ -87,11 +88,11 @@ class OrderController extends Controller
         } catch (QueryException $e) {
             DB::rollBack();
             Log::error("Error creando la orden: " . $e->getMessage());
-            return response()->json(['error' => 'Error creando la orden.'], 500);
+            return response()->json(['error' => 'Error creando la orden. ' . $e->getMessage()], 500);
         }
     }
 
-
+    // Lista la data de laorden junto con info del usuario y del producto. (Parametro ID de la orden)
     public function show($id)
     {
         try {
@@ -103,11 +104,11 @@ class OrderController extends Controller
             }
         } catch (QueryException $e) {
             Log::error("Error obteniendo la orden ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Error obteniendo la orden'], 500);
+            return response()->json(['error' => 'Error obteniendo la orden. ' . $e->getMessage()], 500);
         }
     }
 
-
+    // Elimina una orden especifica permantemente. (Parametro ID de la orden)
     public function destroy($id)
     {
         try {
@@ -122,11 +123,11 @@ class OrderController extends Controller
             }
         } catch (QueryException $e) {
             Log::error("Error eliminado la orden con ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Error eliminado la order'], 500);
+            return response()->json(['error' => 'Error eliminado la order. ' . $e->getMessage()], 500);
         }
     }
 
-
+    // Actualiza el estado de orden especfica. (Param ID de la orden)
     public function updateStatus(Request $request, $id)
     {
         try {
@@ -147,13 +148,13 @@ class OrderController extends Controller
             }
         } catch (QueryException $e) {
             Log::error("Error cambiando el estado de la orden: " . $e->getMessage());
-            return response()->json(['error' => 'Error cambiando el estado de la orden.'], 500);
+            return response()->json(['error' => 'Error cambiando el estado de la orden. ' . $e->getMessage()], 500);
         } catch (ValidationException $e) {
             return response()->json(['errors' => ['status' => ['Estado no valido.']]], 200);
         }
     }
 
-
+    // Generar reportes en tipo excel. Recibe un request con la fecha inicial y fecha final. (start_date - end_date)
     public function generateReport(Request $request)
     {
         try {

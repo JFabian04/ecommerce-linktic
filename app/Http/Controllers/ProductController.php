@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 class ProductController extends Controller
 {
 
+    // Listar todos los productos
     public function index()
     {
         try {
@@ -24,7 +25,7 @@ class ProductController extends Controller
         }
     }
 
-   
+    // Crea un producto
     public function store(ProductRequest $request)
     {
         try {
@@ -41,7 +42,7 @@ class ProductController extends Controller
         }
     }
 
-    
+    // Lista la info de un producto epspecifico. (Param ID del producto)
     public function show($id)
     {
         try {
@@ -56,7 +57,7 @@ class ProductController extends Controller
         }
     }
 
-    
+    // Actualiza la información de un producto especifico. (Param ID de la producto)
     public function update(ProductRequest $request, $id)
     {
         try {
@@ -74,7 +75,7 @@ class ProductController extends Controller
         }
     }
 
-    
+    // Elimina permanentemente un producto. (Param ID del producto)
     public function destroy($id)
     {
         try {

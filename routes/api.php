@@ -30,5 +30,5 @@ Route::middleware('auth.api')->group(function () {
     Route::get('report/orders', [OrderController::class, 'generateReport']);
     
     // Cerrar seisón
-    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });

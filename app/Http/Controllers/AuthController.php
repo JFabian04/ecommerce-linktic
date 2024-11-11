@@ -6,10 +6,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
-   
+
+    // Funcion para inicio de sesion con email y contraseña
     public function login(Request $request)
     {
 
@@ -34,20 +37,33 @@ class AuthController extends Controller
         ]);
     }
 
-   
+    // Cerrar sesión, elimina el token de acceso del usuario (header: Bearer Token)
     public function logout(Request $request)
     {
-        // Verificar si el usuario está autenticado
-        $user = Auth::guard('sanctum')->user();
+        try {
+            // Obtener el Bearer Token del encabezado
+            $token = $request->bearerToken();
 
-        // Si no está autenticado, devolver un error
-        if (!$user) {
-            return response()->json(['error' => 'No autenticado'], 401);
+            if (!$token) {
+                return response()->json(['error' => 'Solicitud no valida. (Token no disponible)'], 401);
+            }
+            
+            // Obtener el token de acceso del usuario de la BD
+            $accessToken = PersonalAccessToken::findToken($token);
+
+            if (!$accessToken) {
+                return response()->json(['error' => 'Token no válido'], 401);
+            }
+
+            $accessToken->tokenable;
+
+            // Eliminar el token
+            $accessToken->delete();
+
+            return response()->json(['message' => 'Cierre de sesión exitoso.'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error al cerrar sesión: ' . $e->getMessage());
+            return response()->json(['error' => 'Ocurrió un error al cerrar sesión. ' . $e->getMessage()], 500);
         }
-
-        // Revocar el token actual
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Cierre de sesión exitoso.'], 200);
     }
 }

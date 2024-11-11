@@ -729,91 +729,6 @@
                 }
             }
         },
-        "/api/users": {
-            "post": {
-                "tags": [
-                    "Usuarios"
-                ],
-                "summary": "Registrar nuevo usuario",
-                "description": "Crea un nuevo usuario y devuelve un token de acceso",
-                "operationId": "f4d2be32c228930e4abaae075a97bed0",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Juan Pérez"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "usuario@ejemplo.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "contraseña123"
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string",
-                                        "example": "contraseña123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Usuario registrado exitosamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Usuario registrado exitosamente"
-                                        },
-                                        "user": {
-                                            "$ref": "#/components/schemas/User"
-                                        },
-                                        "token": {
-                                            "type": "string",
-                                            "example": "1|abc123def456ghi789"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error en el registro de usuario",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Error en el registro de usuario."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/products/images": {
             "post": {
                 "tags": [
@@ -915,6 +830,91 @@
                     }
                 }
             }
+        },
+        "/api/users": {
+            "post": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Registrar nuevo usuario",
+                "description": "Crea un nuevo usuario y devuelve un token de acceso",
+                "operationId": "f4d2be32c228930e4abaae075a97bed0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@ejemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "contraseña123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "contraseña123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario registrado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario registrado exitosamente"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abc123def456ghi789"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el registro de usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error en el registro de usuario."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -985,6 +985,31 @@
                 },
                 "type": "object"
             },
+            "ProductImage": {
+                "required": [
+                    "id",
+                    "product_id",
+                    "image_url"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID de la imagen del producto",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "description": "ID del producto al que pertenece la imagen",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "image_url": {
+                        "description": "URL de la imagen del producto",
+                        "type": "string",
+                        "example": "https://example.com/images/product1.jpg"
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "title": "Usuario",
                 "description": "Modelo de usuario",
@@ -1024,31 +1049,6 @@
                     }
                 },
                 "type": "object"
-            },
-            "ProductImage": {
-                "required": [
-                    "id",
-                    "product_id",
-                    "image_url"
-                ],
-                "properties": {
-                    "id": {
-                        "description": "ID de la imagen del producto",
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "product_id": {
-                        "description": "ID del producto al que pertenece la imagen",
-                        "type": "integer",
-                        "example": 10
-                    },
-                    "image_url": {
-                        "description": "URL de la imagen del producto",
-                        "type": "string",
-                        "example": "https://example.com/images/product1.jpg"
-                    }
-                },
-                "type": "object"
             }
         }
     },
@@ -1066,12 +1066,12 @@
             "description": "Productos"
         },
         {
-            "name": "Usuarios",
-            "description": "Usuarios"
-        },
-        {
             "name": "Product Images",
             "description": "Product Images"
+        },
+        {
+            "name": "Usuarios",
+            "description": "Usuarios"
         }
     ]
 }
