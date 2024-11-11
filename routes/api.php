@@ -32,7 +32,7 @@ Route::middleware('auth.api')->group(function () {
     // Rutas para ordenes
     Route::resource('orders', OrderController::class);
     Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus']);
-    Route::get('report/orders', [OrderController::class, 'generateReport']);
+    Route::post('report/orders', [OrderController::class, 'generateReport']);
     
     // Cerrar seisón
     Route::post('/logout', [AuthController::class, 'logout']);
