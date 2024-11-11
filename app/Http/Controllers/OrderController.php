@@ -146,7 +146,6 @@ class OrderController extends Controller
             $order->save();
 
             return response()->json(['message' => 'Estado de la orden actualizado: ' . $data['status']], 200);
-
         } catch (QueryException $e) {
             Log::error("Error cambiando el estado de la orden: " . $e->getMessage());
             return response()->json(['error' => 'Error cambiando el estado de la orden. ' . $e->getMessage()], 500);
@@ -227,9 +226,15 @@ class OrderController extends Controller
 
             // Guardar el archivo en memoria
             $fileName = 'orders_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
-            $path = storage_path('app/public/order/reports/' . $fileName);
+            $directoryPath = storage_path('app/public/order/reports/');
+            $filePath = $directoryPath . $fileName;
 
-            $writer->save($path);
+            // Verificar si la ruta existe, si no, crearla automáticamente
+            if (!file_exists($directoryPath)) {
+                mkdir($directoryPath, 0775, true);
+            }
+
+            $writer->save($filePath);
             $publicPath = asset('storage/order/reports/' . $fileName);
 
             return response()->json([
