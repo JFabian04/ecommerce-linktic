@@ -91,8 +91,8 @@ class ProductController extends Controller
 
             return response()->json(['message' => 'Estado del producto: ' . (!$product->status ? 'Inactivo' : 'Activo')]);
         } catch (QueryException $e) {
-            Log::error("Error al eliminar producto con ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Error al eliminar producto. ' . $e->getMessage()], 500);
+            Log::error("Error al cambiar estado del producto con ID $id: " . $e->getMessage());
+            return response()->json(['error' => 'Error al cambiar estado del producto. ' . $e->getMessage()], 500);
         }
     }
 }

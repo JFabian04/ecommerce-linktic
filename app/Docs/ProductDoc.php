@@ -43,6 +43,7 @@ class ProductDoc
      * )
      */
     public function index(){}
+    
 
     /**
      * Función store()
@@ -78,6 +79,7 @@ class ProductDoc
      */
     public function store(){}
 
+
     /**
      * Función show()
      * 
@@ -108,6 +110,7 @@ class ProductDoc
      * )
      */
     public function show(){}
+
 
     /**
      * Función update()
@@ -148,15 +151,15 @@ class ProductDoc
      * )
      */
     public function update(){}
+    
 
     /**
-     * Función destroy()
      * 
-     * @OA\Delete(
-     *     path="/api/products/{id}",
-     *     summary="Eliminar producto por ID",
+     * @OA\Patch(
+     *     path="/api/products/{id}/status",
+     *     summary="Actualizar estado de producto por ID",
      *     tags={"Productos"},
-     *     description="Elimina un producto referenciado por su ID",
+     *     description="Activa/Inactiva un producto referenciado por su ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -165,7 +168,7 @@ class ProductDoc
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Producto eliminado con éxtio",
+     *         description="Estado del producto: Activo/Inactivo",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="message", type="string", example="Producto eliminado con éxito")
@@ -177,9 +180,9 @@ class ProductDoc
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Error al eliminar el prodcuto"
+     *         description="Error al cambiar el estado del prodcuto"
      *     )
      * )
      */
-    public function destroy(){}
+    public function updateStatus(){}
 }
