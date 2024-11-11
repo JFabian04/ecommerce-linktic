@@ -732,7 +732,7 @@
         "/api/products/images": {
             "post": {
                 "tags": [
-                    "Product Images"
+                    "Productos"
                 ],
                 "summary": "Cargar imagen para un producto",
                 "description": "Cargar una nueva imagen para un producto.",
@@ -792,7 +792,7 @@
         "/api/products/images/{id}": {
             "delete": {
                 "tags": [
-                    "Product Images"
+                    "Productos"
                 ],
                 "summary": "Eliminar imagen de un producto",
                 "description": "Eliminar una imagen de un producto.",
@@ -1064,10 +1064,6 @@
         {
             "name": "Productos",
             "description": "Productos"
-        },
-        {
-            "name": "Product Images",
-            "description": "Product Images"
         },
         {
             "name": "Usuarios",

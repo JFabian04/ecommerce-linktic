@@ -39,7 +39,7 @@ class ProductImageDoc
      *     path="/api/products/images",
      *     summary="Cargar imagen para un producto",
      *     operationId="uploadProductImage",
-     *     tags={"Product Images"},
+     *     tags={"Productos"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Imagen para cargar",
@@ -74,7 +74,7 @@ class ProductImageDoc
      *     path="/api/products/images/{id}",
      *     summary="Eliminar imagen de un producto",
      *     operationId="deleteProductImage",
-     *     tags={"Product Images"},
+     *     tags={"Productos"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
