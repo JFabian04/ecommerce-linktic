@@ -8,14 +8,10 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+
 class UserController extends Controller
 {
-    /**
-     * Registrar un nuevo usuario.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(UserRequest $request)
     {
         try {

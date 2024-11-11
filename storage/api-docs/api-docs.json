@@ -6,6 +6,159 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Iniciar sesión",
+                "description": "Autentica al usuario y devuelve un token de acceso",
+                "operationId": "3f70227d99e6db9a3391dd9dbd777042",
+                "parameters": [
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "Correo electrónico del usuario",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@ejemplo.com"
+                                    },
+                                    "password": {
+                                        "description": "Contraseña del usuario",
+                                        "type": "string",
+                                        "example": "contraseña123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inicio de sesión exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Inicio de sesión exitoso"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abc123def456ghi789"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales incorrectas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Credenciales incorrectas."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Cierra la sesión del usuario autenticado y revoca el token actual",
+                "operationId": "33edf4410f59808cc226c23f6bdb9871",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token de autenticación en formato Bearer",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer 1|abc123def456ghi789"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cierre de sesión exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cierre de sesión exitoso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "No autenticado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/orders": {
             "get": {
                 "tags": [
@@ -13,7 +166,7 @@
                 ],
                 "summary": "Obtener todas las ordenes",
                 "description": "Retorna la lista de ordenes",
-                "operationId": "2cd7e03021e72d9d799c12dfe179c865",
+                "operationId": "e73e1c2e14917050262e292887904341",
                 "responses": {
                     "200": {
                         "description": "Lista de ordened",
@@ -39,7 +192,7 @@
                 ],
                 "summary": "Crear nueva orden",
                 "description": "Crear una nueva orden con el ID del usuario y los productos (ID, quantity)",
-                "operationId": "d690d6834318e9b064df441e854de8b9",
+                "operationId": "646d034600f64bafa239fd2f848a793f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -99,7 +252,7 @@
                 ],
                 "summary": "Obtener un order",
                 "description": "Retorna la ifnromación de una orde especfica por ID",
-                "operationId": "c29621029e70f65247909d3e09031118",
+                "operationId": "50f7b7ac3d6e2239c2d23d379688e71b",
                 "parameters": [
                     {
                         "name": "id",
@@ -135,7 +288,7 @@
                 ],
                 "summary": "ELiminar order",
                 "description": "Elimina una orden permanentemente por su ID",
-                "operationId": "303a7b797887b66c7790c4c187b54790",
+                "operationId": "117dd4a92ba1e1e57afa337e3f20f430",
                 "parameters": [
                     {
                         "name": "id",
@@ -270,6 +423,90 @@
                 }
             }
         },
+        "/api/report/orders": {
+            "post": {
+                "tags": [
+                    "Ordenes"
+                ],
+                "summary": "Generar reporte de órdenes en Excel",
+                "description": "Genera un archivo Excel con las órdenes en un rango de fechas especificado. Retorna la URL de descarga del archivo.",
+                "operationId": "02ec94138050069911d309666dd0761c",
+                "parameters": [
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "description": "Fecha de inicio del rango de búsqueda (YYYY-MM-DD)",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-11-04"
+                                    },
+                                    "end_date": {
+                                        "description": "Fecha de fin del rango de búsqueda (YYYY-MM-DD)",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-11-11"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Archivo generado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El archivo ha sido generado correctamente."
+                                        },
+                                        "download_url": {
+                                            "description": "URL para descargar el archivo",
+                                            "type": "string",
+                                            "example": "http://localhost/storage/order/reports/orders_2024_11_04.xlsx"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al generar el reporte",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Ocurrió un error al generar el reporte."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -277,7 +514,7 @@
                 ],
                 "summary": "Obtener todos los productos",
                 "description": "Retorna una lista de todos los productos",
-                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "operationId": "2f4980e22c1f71fbfc46df56e03d9142",
                 "responses": {
                     "200": {
                         "description": "Lista de productos",
@@ -303,7 +540,7 @@
                 ],
                 "summary": "Crear un nuevo producto",
                 "description": "Crear un nuevo producto y retorna un estado 201",
-                "operationId": "e8185e307706e2cd84bbcf5171e2f09d",
+                "operationId": "01f5a62382325d5eac546cc7cd95b068",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -357,7 +594,7 @@
                 ],
                 "summary": "Obtener producto por ID",
                 "description": "Retorne el objeto del prodcuto obtenido por ID",
-                "operationId": "7ab21ddb713501f3d4c2914892c02a21",
+                "operationId": "dfd76f1a80e7a437067c453b59ceca17",
                 "parameters": [
                     {
                         "name": "id",
@@ -393,7 +630,7 @@
                 ],
                 "summary": "Actualizar producto por ID",
                 "description": "Actualizar un producto por refereciado por su ID",
-                "operationId": "6a7e11900844cd85cff66e662b82bd4c",
+                "operationId": "9fba3a01d13859cafab07b112c1ded48",
                 "parameters": [
                     {
                         "name": "id",
@@ -455,7 +692,7 @@
                 ],
                 "summary": "Eliminar producto por ID",
                 "description": "Elimina un producto referenciado por su ID",
-                "operationId": "e80a6ca46716acee6b47ea1ac91663c0",
+                "operationId": "84362afe7259bfd61178c5b2184d42de",
                 "parameters": [
                     {
                         "name": "id",
@@ -488,6 +725,91 @@
                     },
                     "500": {
                         "description": "Error al eliminar el prodcuto"
+                    }
+                }
+            }
+        },
+        "/api/users": {
+            "post": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Registrar nuevo usuario",
+                "description": "Crea un nuevo usuario y devuelve un token de acceso",
+                "operationId": "f4d2be32c228930e4abaae075a97bed0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@ejemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "contraseña123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "contraseña123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario registrado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario registrado exitosamente"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abc123def456ghi789"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el registro de usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error en el registro de usuario."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -604,6 +926,7 @@
                 ],
                 "properties": {
                     "id": {
+                        "description": "Informacioón del MODELO",
                         "type": "integer",
                         "example": 1
                     },
@@ -662,6 +985,46 @@
                 },
                 "type": "object"
             },
+            "User": {
+                "title": "Usuario",
+                "description": "Modelo de usuario",
+                "required": [
+                    "id",
+                    "name",
+                    "email"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID único del usuario",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nombre del usuario",
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "email": {
+                        "description": "Correo electrónico del usuario",
+                        "type": "string",
+                        "format": "email",
+                        "example": "usuario@ejemplo.com"
+                    },
+                    "created_at": {
+                        "description": "Fecha de creación del usuario",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-11-10T14:34:56Z"
+                    },
+                    "updated_at": {
+                        "description": "Fecha de última actualización del usuario",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-11-10T15:12:34Z"
+                    }
+                },
+                "type": "object"
+            },
             "ProductImage": {
                 "required": [
                     "id",
@@ -691,12 +1054,20 @@
     },
     "tags": [
         {
-            "name": "Productos",
-            "description": "Endpoints - productos"
+            "name": "Autenticación",
+            "description": "Autenticación"
         },
         {
             "name": "Ordenes",
-            "description": "Endpoints - órdenes"
+            "description": "Ordenes"
+        },
+        {
+            "name": "Productos",
+            "description": "Productos"
+        },
+        {
+            "name": "Usuarios",
+            "description": "Usuarios"
         },
         {
             "name": "Product Images",

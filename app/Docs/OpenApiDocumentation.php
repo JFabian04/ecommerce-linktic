@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Swagger;
+namespace App\Docs;
 
 use OpenApi\Annotations as OA;
 
@@ -10,15 +10,6 @@ use OpenApi\Annotations as OA;
  *     version="1.0.0",
  *     description="API para gestionar plataforma de e-commerce."
  * )
- *
- * @OA\Tag(
- *     name="Productos",
- *     description="Endpoints - productos"
- * )
- *
- * @OA\Tag(
- *     name="Ordenes",
- *     description="Endpoints - órdenes"
- * )
+ * 
  */
 class OpenApiDocumentation {}
