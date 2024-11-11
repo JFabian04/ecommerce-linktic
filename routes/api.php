@@ -16,8 +16,9 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Crud de Productos
 Route::resource('products', ProductController::class);
+Route::patch('products/{id}/status', [ProductController::class, 'updateStatus']);
 
-Route::middleware('auth.api')->group(function () {
+// Route::middleware('auth.api')->group(function () {
     // Rutas para imagenes de productos
     Route::prefix('products/images')->group(function () {
         Route::post('/', [ProductImageController::class, 'store']);
@@ -31,4 +32,4 @@ Route::middleware('auth.api')->group(function () {
     
     // Cerrar seisón
     Route::post('/logout', [AuthController::class, 'logout']);
-});
+// });

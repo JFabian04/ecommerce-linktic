@@ -26,8 +26,15 @@ class OrderRequest extends FormRequest
         return [
             'user_id' => 'required|exists:users,id',
             'products' => 'required|array',
-            'products.*.id' => 'required|exists:products,id',
+            // 'products.*.id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1'
+
+        ];
+    }
+    public function attributes()
+    {
+        return [
+            'products.*.quantity' => 'cantidad del producto',
 
         ];
     }
@@ -40,9 +47,16 @@ class OrderRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
+        // Transformar las claves de error a las nuevas etiquetas que deseas
+        $errors = collect($validator->errors()->toArray())->mapWithKeys(function ($messages, $key) {
+            $newKey = preg_replace('/products\.\d+\.quantity/', 'quantity', $key);
+            return [$newKey => $messages];
+        });
+    
+
         throw new HttpResponseException(response()->json([
             'status' => false,
-            'errors' => $validator->errors()
+            'errors' => $errors
         ], 200));
     }
 }

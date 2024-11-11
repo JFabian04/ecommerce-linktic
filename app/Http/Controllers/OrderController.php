@@ -52,7 +52,7 @@ class OrderController extends Controller
             $total = $this->orderService->calculateTotalOrder($request->products);
 
             if (!$total['status']) {
-                return response()->json($total['error'], 500);
+                return response()->json(['error' => $total['error']], 500);
             }
 
             $data['total'] = $total['result'];
@@ -132,20 +132,21 @@ class OrderController extends Controller
     {
         try {
             $data = $request->validate([
-                'status' => 'required|string|in:pendiente,entregado,cancelado'
+                'status' => 'required|string|in:procesando,entregado,cancelado'
             ]);
 
             $order = Order::find($id);
 
-            if ($order) {
-                // Actualizar el estado de la orden
-                $order->status = $data['status'];
-                $order->save();
-
-                return response()->json(['message' => 'Estado de la orden actualizado: ' . $data['status']], 200);
-            } else {
+            if (!$order) {
                 return response()->json(['error' => 'No se encontró la orden.'], 404);
             }
+
+            // Actualizar el estado de la orden
+            $order->status = $data['status'];
+            $order->save();
+
+            return response()->json(['message' => 'Estado de la orden actualizado: ' . $data['status']], 200);
+
         } catch (QueryException $e) {
             Log::error("Error cambiando el estado de la orden: " . $e->getMessage());
             return response()->json(['error' => 'Error cambiando el estado de la orden. ' . $e->getMessage()], 500);
@@ -154,7 +155,7 @@ class OrderController extends Controller
         }
     }
 
-    // Generar reportes en tipo excel. Recibe un request con la fecha inicial y fecha final. (start_date - end_date)
+    // Generar reportes de ordenes en tipo excel. Recibe un request con la fecha inicial y fecha final. (start_date - end_date)
     public function generateReport(Request $request)
     {
         try {
@@ -171,7 +172,8 @@ class OrderController extends Controller
                 ->setCellValue('B1', 'Cliente')
                 ->setCellValue('C1', 'Correo')
                 ->setCellValue('D1', 'Total')
-                ->setCellValue('E1', 'Fecha');
+                ->setCellValue('E1', 'Fecha')
+                ->setCellValue('F1', 'Estado');
 
             // Estilos para header
             $headerStyle = [
@@ -179,7 +181,7 @@ class OrderController extends Controller
                 'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4CAF50']],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ];
-            $sheet->getStyle('A1:E1')->applyFromArray($headerStyle);
+            $sheet->getStyle('A1:F1')->applyFromArray($headerStyle);
 
             $row = 2;
             foreach ($orders as $order) {
@@ -188,7 +190,8 @@ class OrderController extends Controller
                     ->setCellValue('B' . $row, $order->user->name)
                     ->setCellValue('C' . $row, $order->user->email)
                     ->setCellValue('D' . $row, $order->total)
-                    ->setCellValue('E' . $row, $formattedDate);
+                    ->setCellValue('E' . $row, $formattedDate)
+                    ->setCellValue('F' . $row, $order->status);
                 $row++;
             }
 
@@ -206,10 +209,10 @@ class OrderController extends Controller
                 ]
 
             ];
-            $sheet->getStyle('A1:E' . ($row - 1))->applyFromArray($styleArray);
+            $sheet->getStyle('A1:F' . ($row - 1))->applyFromArray($styleArray);
 
             // Ancho automatico de columnas
-            foreach (range('A', 'E') as $columnID) {
+            foreach (range('A', 'F') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
 

@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::all();
+            $products = Product::with('images:id,product_id,image_path,is_main')->get();
             return response()->json($products);
         } catch (QueryException $e) {
             Log::error("Error al obtener productos: " . $e->getMessage());
@@ -42,18 +42,20 @@ class ProductController extends Controller
         }
     }
 
-    // Lista la info de un producto epspecifico. (Param ID del producto)
+    // Lista la info de un producto especifico. (Param ID del producto)
     public function show($id)
     {
         try {
-            $product = Product::findOrFail($id);
+            $product = Product::with('images:id,product_id,image_path,is_main')->find($id);
+
+            if (!$product) {
+                return response()->json(['error' => 'Producto no encontrado'], 404);
+            }
+
             return response()->json($product);
         } catch (QueryException $e) {
             Log::error("Error al obtener producto con ID $id: " . $e->getMessage());
             return response()->json(['error' => 'Error al obtener producto'], 500);
-        } catch (\Exception $e) {
-            Log::error("Producto no encontrado con ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Producto no encontrado'], 404);
         }
     }
 
@@ -62,33 +64,35 @@ class ProductController extends Controller
     {
         try {
 
-            $product = Product::findOrFail($id);
+            $product = Product::find($id);
+            if (!$product) {
+                return response()->json(['error' => 'Producto no encontrado'], 404);
+            }
+
             $product->update($request->all());
 
             return response()->json(['status' => true, 'message' => 'Producto actualizado correctamente.'], 201);
         } catch (QueryException $e) {
             Log::error("Error al actualizar producto con ID $id: " . $e->getMessage());
             return response()->json(['error' => 'Error al actualizar producto'], 500);
-        } catch (\Exception $e) {
-            Log::error("Producto no encontrado con ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Producto no encontrado'], 404);
         }
     }
 
-    // Elimina permanentemente un producto. (Param ID del producto)
-    public function destroy($id)
+    // Actualizar el estado del producto. (Param ID del producto)
+    public function updateStatus($id)
     {
         try {
-            $product = Product::findOrFail($id);
-            $product->delete();
+            $product = Product::find($id);
+            if (!$product) {
+                return response()->json(['error' => 'Producto no encontrado'], 404);
+            }
 
-            return response()->json(['status'=> true, 'message' => 'Producto eliminado con éxito']);
+            $product->update(['status' => !$product->status]);
+
+            return response()->json(['message' => 'Estado del producto: ' . (!$product->status ? 'Inactivo' : 'Activo')]);
         } catch (QueryException $e) {
             Log::error("Error al eliminar producto con ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Error al eliminar producto'], 500);
-        } catch (\Exception $e) {
-            Log::error("Producto no encontrado con ID $id: " . $e->getMessage());
-            return response()->json(['error' => 'Producto no encontrado'], 404);
+            return response()->json(['error' => 'Error al eliminar producto. ' . $e->getMessage()], 500);
         }
     }
 }

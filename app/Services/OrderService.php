@@ -21,18 +21,20 @@ class OrderService
             foreach ($products as $productData) {
                 $product = Product::find($productData['id']);
 
-                if ($product) {
+                if ($product && $product->status == 1) {
                     $productTotal = $product->price * $productData['quantity'];
                     $total += $productTotal;
+                } elseif ($product && $product->status == 0) {
+                    return ['status' => false, 'error'  => 'EL producto '.  $product->name . ' no se encuentra disponible.', 'code' => 404];
                 } else {
-                    return ['status' => false, 'error'  => 'No se encontró el producto.', 'code' => 404];
+                    return ['status' => false, 'error'  => 'No se encontró el producto con ID: ' . $productData['id'], 'code' => 404];
                 }
             }
             return ['status' => true, 'result'  => $total];
         } catch (\Exception $e) {
             Log::error("Error consumiendo order service: " . $e->getMessage());
 
-            return ['status' => false, 'error'  => 'Error consumiendo el servicio de ordenes', 'code' => 500];
+            return ['status' => false, 'error'  => 'Error consumiendo el servicio de ordenes. ' . $e->getMessage(), 'code' => 500];
         }
     }
 
