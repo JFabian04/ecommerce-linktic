@@ -9,7 +9,7 @@ services:
             - '8000:8000'
         volumes:
             - '.:/var/www'
-            - ./public/storage:/var/www/public/storage
+            # - ./public/storage:/var/www/public/storage
         networks:
             - laravel-net
         depends_on:

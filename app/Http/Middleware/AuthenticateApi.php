@@ -10,7 +10,6 @@ class AuthenticateApi
 {
     public function handle(Request $request, Closure $next)
     {
-        // Verificar si el usuario está autenticado con Sanctum
         if (!Auth::guard('sanctum')->check()) {
             return response()->json(['error' => 'No autorizado.'], 401);
         }

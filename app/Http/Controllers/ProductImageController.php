@@ -116,7 +116,7 @@ class ProductImageController extends Controller
             ], 201);
         } catch (\Exception $e) {
             Log::error("Error procesando la imagen: " . $e->getMessage());
-            return response()->json(['error' => 'Error procesando la imagen.'], 500);
+            return response()->json(['error' => 'Error procesando la imagen. ' . $e->getMessage()], 500);
         }
     }
 
@@ -173,7 +173,7 @@ class ProductImageController extends Controller
             Log::error('Error al eliminar la imagen: ' . $e->getMessage(), ['exception' => $e]);
 
             return response()->json([
-                'error' => 'Hubo un problema al eliminar la imagen. Por favor intente nuevamente más tarde.'
+                'error' => 'Hubo un problema al eliminar la imagen. Por favor intente nuevamente más tarde. ' . $e->getMessage()
             ], 500);
         }
     }

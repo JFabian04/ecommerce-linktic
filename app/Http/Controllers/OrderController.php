@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  * @OA\Schema(
@@ -120,7 +125,7 @@ class OrderController extends Controller
             $order = Order::create($data);
             // Usar el servicio para actualizar el stock de los productos
             $stockUpdate = $this->orderService->updateProductStock($request->products);
-            
+
 
             if (!$stockUpdate['status']) {
                 return response()->json(['error' => $stockUpdate['error']], $stockUpdate['code']);
@@ -312,6 +317,90 @@ class OrderController extends Controller
             return response()->json(['error' => 'Error cambiando el estado de la orden.'], 500);
         } catch (ValidationException $e) {
             return response()->json(['errors' => ['status' => ['Estado no valido.']]], 200);
+        }
+    }
+
+    public function generateReport(Request $request)
+    {
+        try {
+
+            $orders = Order::with('user:id,name,email')->whereBetween('created_at', [$request->start_date, $request->end_date])
+                ->get();
+
+            // Crear un objeto Spreadsheet
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Agregar los encabezados con formato
+            $sheet->setCellValue('A1', 'ID')
+                ->setCellValue('B1', 'Cliente')
+                ->setCellValue('C1', 'Correo')
+                ->setCellValue('D1', 'Total')
+                ->setCellValue('E1', 'Fecha');
+
+            // Estilos para header
+            $headerStyle = [
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4CAF50']],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            ];
+            $sheet->getStyle('A1:E1')->applyFromArray($headerStyle);
+
+            $row = 2;
+            foreach ($orders as $order) {
+                $formattedDate = $order->created_at->format('d-m-Y');
+                $sheet->setCellValue('A' . $row, $order->id)
+                    ->setCellValue('B' . $row, $order->user->name)
+                    ->setCellValue('C' . $row, $order->user->email)
+                    ->setCellValue('D' . $row, $order->total)
+                    ->setCellValue('E' . $row, $formattedDate);
+                $row++;
+            }
+
+            // Borders para celdas
+            $styleArray = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT, 
+                    'vertical' => Alignment::VERTICAL_CENTER,   
+                ]
+
+            ];
+            $sheet->getStyle('A1:E' . ($row - 1))->applyFromArray($styleArray);
+
+            // Ancho automatico de columnas
+            foreach (range('A', 'E') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+
+            // Alto para las filas
+            $sheet->getRowDimension(1)->setRowHeight(30); 
+            foreach (range(2, $row - 1) as $rowIndex) {
+                $sheet->getRowDimension($rowIndex)->setRowHeight(20); 
+            }
+
+            // Crear el archivo Excel
+            $writer = new Xlsx($spreadsheet);
+
+            // Guardar el archivo en memoria
+            $fileName = 'orders_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+            $path = storage_path('app/public/order/reports/' . $fileName);
+
+            $writer->save($path);
+            $publicPath = asset('storage/order/reports/' . $fileName);
+
+            return response()->json([
+                'message' => 'El archivo ha sido generado correctamente.',
+                'download_url' => $publicPath 
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error generando reporte: " . $e->getMessage());
+            return response()->json(['error' => 'Oucrrió un error al generar el reporte.' . $e->getMessage()], 500);
         }
     }
 }
