@@ -57,8 +57,7 @@ class ProductImageDoc
      *         response=200,
      *         description="Imagen cargada con éxito",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Imagen cargada con éxito."),
-     *             @OA\Property(property="image", type="object", ref="#/components/schemas/ProductImage")
+     *             @OA\Property(property="message", type="string", example="Imagen cargada con éxito.")
      *         )
      *     ),
      *     @OA\Response(response=400, description="Solicitud incorrecta")

@@ -151,7 +151,7 @@ class ProductDoc
      * )
      */
     public function update(){}
-    
+
 
     /**
      * 
@@ -171,7 +171,7 @@ class ProductDoc
      *         description="Estado del producto: Activo/Inactivo",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="message", type="string", example="Producto eliminado con éxito")
+     *             @OA\Property(property="message", type="string", example="Estado del producto: Activo/Inactivo")
      *         )
      *     ),
      *     @OA\Response(

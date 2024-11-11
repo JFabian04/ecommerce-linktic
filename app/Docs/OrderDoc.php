@@ -34,7 +34,7 @@ class OrderDoc
      *     description="Retorna la lista de ordenes",
      *     @OA\Response(
      *         response=200,
-     *         description="Lista de ordened",
+     *         description="Lista de ordenes",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Order"))
      *     ),
      *     @OA\Response(
@@ -93,7 +93,7 @@ class OrderDoc
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Order details",
+     *         description="Información de la orde específica",
      *         @OA\JsonContent(ref="#/components/schemas/Order")
      *     ),
      *     @OA\Response(
@@ -111,7 +111,7 @@ class OrderDoc
     /**
      * @OA\Delete(
      *     path="/api/orders/{id}",
-     *     summary="ELiminar order",
+     *     summary="Eliminar order",
      *     tags={"Ordenes"},
      *     description="Elimina una orden permanentemente por su ID",
      *     @OA\Parameter(
@@ -122,8 +122,8 @@ class OrderDoc
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Order deleted successfully",
-     *         @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Order deleted successfully"))
+     *         description="Orden eliminada correctamente",
+     *         @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Orden eliminada correctamente"))
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -169,8 +169,7 @@ class OrderDoc
      *         response=200,
      *         description="Estado de la orden actualizado.",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Estado de la orden actualizado"),
-     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Order")
+     *             @OA\Property(property="message", type="string", example="Estado de la orden actualizado: procesando/entregado/cancelado")
      *         )
      *     ),
      *     @OA\Response(

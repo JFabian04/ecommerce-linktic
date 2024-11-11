@@ -169,7 +169,7 @@
                 "operationId": "e73e1c2e14917050262e292887904341",
                 "responses": {
                     "200": {
-                        "description": "Lista de ordened",
+                        "description": "Lista de ordenes",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -265,7 +265,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Order details",
+                        "description": "Información de la orde específica",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -286,7 +286,7 @@
                 "tags": [
                     "Ordenes"
                 ],
-                "summary": "ELiminar order",
+                "summary": "Eliminar order",
                 "description": "Elimina una orden permanentemente por su ID",
                 "operationId": "117dd4a92ba1e1e57afa337e3f20f430",
                 "parameters": [
@@ -301,14 +301,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Order deleted successfully",
+                        "description": "Orden eliminada correctamente",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Order deleted successfully"
+                                            "example": "Orden eliminada correctamente"
                                         }
                                     },
                                     "type": "object"
@@ -377,10 +377,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Estado de la orden actualizado"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Order"
+                                            "example": "Estado de la orden actualizado: procesando/entregado/cancelado"
                                         }
                                     },
                                     "type": "object"
@@ -685,14 +682,16 @@
                         "description": "Error al actualizar producto"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/api/products/{id}/status": {
+            "patch": {
                 "tags": [
                     "Productos"
                 ],
-                "summary": "Eliminar producto por ID",
-                "description": "Elimina un producto referenciado por su ID",
-                "operationId": "84362afe7259bfd61178c5b2184d42de",
+                "summary": "Actualizar estado de producto por ID",
+                "description": "Activa/Inactiva un producto referenciado por su ID",
+                "operationId": "1019fab360aa481dee8410bb7aa50cda",
                 "parameters": [
                     {
                         "name": "id",
@@ -705,14 +704,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Producto eliminado con éxtio",
+                        "description": "Estado del producto: Activo/Inactivo",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Producto eliminado con éxito"
+                                            "example": "Estado del producto: Activo/Inactivo"
                                         }
                                     },
                                     "type": "object"
@@ -724,7 +723,7 @@
                         "description": "Producto no encontrado"
                     },
                     "500": {
-                        "description": "Error al eliminar el prodcuto"
+                        "description": "Error al cambiar el estado del prodcuto"
                     }
                 }
             }
@@ -773,9 +772,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Imagen cargada con éxito."
-                                        },
-                                        "image": {
-                                            "$ref": "#/components/schemas/ProductImage"
                                         }
                                     },
                                     "type": "object"
